@@ -16,6 +16,7 @@ class CurrencyConverterVC: BaseViewController {
         textField.layer.borderColor = UIColor.gray.cgColor
         textField.layer.cornerRadius = Padding.p2
         textField.textAlignment = .right
+        textField.keyboardType = .numberPad
         return textField
     }()
    
