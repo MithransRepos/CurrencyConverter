@@ -49,11 +49,19 @@ class CurrencyConverterViewModel {
     }
     
     func getCurrencyExchangeRates() {
+        if UserDefaults.shouldFetchExchangeRates == false {
+            self.exchangeRateResponse = UserDefaults.exchangeRateReponse
+            return
+        }
         delegate?.apiCallInProgress()
         networkManager.getCurrencyExchangeRates { result in
             switch result {
             case .success(let response):
+                guard let response = response else {
+                    return
+                }
                 self.exchangeRateResponse = response
+                UserDefaults.set(exchangeRateReponse: response)
             case .failure(_):
                 break
             }
@@ -125,6 +133,63 @@ extension CurrencyConverterViewModel: CurrencyConverterDS {
     
     func didUserSelectedCurrenct(at index: Int) {
         self.userSelectedCurrency = currencyList[safeIndex: index]
+        checkAndFetchExchangeRatesIfNeeded()
     }
+    
+    func checkAndFetchExchangeRatesIfNeeded() {
+        if UserDefaults.shouldFetchExchangeRates {
+            getCurrencyExchangeRates()
+        }
+    }
+    
+}
+
+
+extension UserDefaults {
+    
+    private struct Keys {
+        
+        // MARK: - Constants
+        
+        static let lastFetchTimeOfExchangeRates = "lastFetchTimeOfExchangeRates"
+        
+        static let exchangeRatesResponse = "exchangeRatesResponse"
+        
+    }
+    
+    class var exchangeRateReponse: CurrencyExchangeResponse? {
+        guard let storedValue = UserDefaults.standard.data(forKey: UserDefaults.Keys.exchangeRatesResponse) else {
+            return nil
+        }
+        do {
+            let jsonDecoder = JSONDecoder()
+            return try jsonDecoder.decode(CurrencyExchangeResponse.self, from: storedValue)
+        }
+        catch {
+            // catch the error
+        }
+        return nil
+    }
+    
+    class func set(exchangeRateReponse: CurrencyExchangeResponse) {
+        let jsonEncoder = JSONEncoder()
+        do {
+            let jsonData = try jsonEncoder.encode(exchangeRateReponse)
+            UserDefaults.standard.set(jsonData, forKey: UserDefaults.Keys.exchangeRatesResponse)
+            UserDefaults.standard.set(Date().timeIntervalSince1970, forKey: UserDefaults.Keys.lastFetchTimeOfExchangeRates)
+        }
+        catch {
+            // catch the error
+        }
+    }
+    
+    class var shouldFetchExchangeRates: Bool {
+        let storedValue = UserDefaults.standard.double(forKey: UserDefaults.Keys.lastFetchTimeOfExchangeRates)
+        if Date().timeIntervalSince1970 - storedValue > 1800 || self.exchangeRateReponse == nil {
+            return true
+        }
+        return false
+    }
+    
     
 }

@@ -10,8 +10,8 @@ import UIKit
 
 class CurrencyConverterVC: BaseViewController {
     
-    let currencyTextField: UITextField = {
-        let textField = UITextField()
+    let currencyTextField: TextField = {
+        let textField = TextField()
         textField.layer.borderWidth = 1
         textField.layer.borderColor = UIColor.gray.cgColor
         textField.layer.cornerRadius = Padding.p2
@@ -91,6 +91,10 @@ extension CurrencyConverterVC: UITextFieldDelegate {
         dataSource.didUserChangeAmount(amount: textField.text)
     }
     
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        view.endEditing(true)
+        return true
+    }
    
 }
 
