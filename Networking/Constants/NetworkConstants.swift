@@ -10,7 +10,7 @@ import Foundation
 
 struct NetworkConstants {
     static var BaseURL: String {
-        return "https://api.currencylayer.com"
+        return "http://api.currencylayer.com"
     }
     
     static var ApiKey: String {
