@@ -12,6 +12,7 @@ protocol CurrencyConverterViewModelDelegate: class {
     func reloadData()
     func apiCallInProgress()
     func apiCallCompleted()
+    func apiCallFailed()
 }
 
 protocol CurrencyConverterDS: class {
@@ -63,7 +64,7 @@ class CurrencyConverterViewModel {
                 self.exchangeRateResponse = response
                 UserDefaults.set(exchangeRateReponse: response)
             case .failure(_):
-                break
+                self.delegate?.apiCallFailed()
             }
             self.delegate?.apiCallCompleted()
             self.delegate?.reloadData()

@@ -72,6 +72,7 @@ class CurrencyConverterVC: BaseViewController {
     }
     
     @objc func openCurrencySelector() {
+        if dataSource.noOfExchangeRates == 0 { return }
         let currencySelector = CurrencySelectorVC(currencyList: dataSource.currencyListToSelect)
         currencySelector.delegate = self
         self.present(currencySelector, animated: true, completion: nil)
@@ -124,6 +125,12 @@ extension CurrencyConverterVC : UITableViewDelegate, UITableViewDataSource {
 }
 
 extension CurrencyConverterVC: CurrencyConverterViewModelDelegate {
+    func apiCallFailed() {
+        let alert = UIAlertController(title: "Sorry couldn't fetch the exchange rates", message: "Please try again later", preferredStyle:.alert)
+        alert.addAction(UIAlertAction(title: "Ok", style: .default, handler: nil))
+        self.present(alert, animated: true, completion: nil)
+    }
+    
     func reloadData() {
         tableView.reloadData()
     }
