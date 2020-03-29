@@ -1,2 +1,2 @@
 # CurrencyConverter
-Currency converter powered by https://currencylayer.com
+Currency converter iOS app powered by https://currencylayer.com
